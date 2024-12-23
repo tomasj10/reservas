@@ -35,6 +35,8 @@ public class Avion {
     private void asignarAsientos() {
         int asientoPorFila = 0;
         for (int numAsiento = 0; numAsiento < totalAsientos; numAsiento++) {
+            if (asientoPorFila == columnas)
+                asientoPorFila = 0;
             nuevoAsiento(numAsiento, asientoPorFila);
             asientoPorFila++;
         }
@@ -48,18 +50,9 @@ public class Avion {
     private void nuevoAsiento(int numAsiento, int asientoPorFila) {
         asientos.put(numAsiento, new Asiento(
                                 numAsiento,
-                                tipoAsiento(comprobarNuevaFila(asientoPorFila)),
+                                tipoAsiento(asientoPorFila),
                                 esVip(numAsiento))
         );
-    }
-
-    /**
-     * Comprueba si hay que pasar a la siguiente fila de asientos
-     * @param asientoPorFila número de asiento en la fila (0-8)
-     * @return número de asiento en la fila o 0 si hay que pasar a la siguiente fila
-     */
-    private int comprobarNuevaFila(int asientoPorFila) {
-        return asientoPorFila == columnas ? asientoPorFila : 0;
     }
 
     /**
@@ -85,7 +78,7 @@ public class Avion {
      * @return true si el asiento pertenece al primer tercio del total de asientos, false si es lo contrario.
      */
     boolean esVip(int numAsiento){
-        return numAsiento > totalAsientos/3;
+        return numAsiento <= totalAsientos/3;
     }
 
     public void mostrarAsientos() {
