@@ -23,43 +23,43 @@ public class Asiento {
         };
     }
 
-    public int numero() {
+    public int getNumero() {
         return numero;
     }
 
-    public void numero(int numero) {
+    public void setNumero(int numero) {
         this.numero = numero;
     }
 
-    public String tipoAsiento() {
+    public String getTipoAsiento() {
         return tipoAsiento;
     }
 
-    public void tipoAsiento(String tipoAsiento) {
+    public void setTipoAsiento(String tipoAsiento) {
         this.tipoAsiento = tipoAsiento;
     }
 
-    public int precio() {
+    public int getPrecio() {
         return precio;
     }
 
-    public void precio(int precio) {
+    public void setPrecio(int precio) {
         this.precio = precio;
     }
 
-    public boolean disponible(){
+    public boolean isDisponible() {
         return disponible;
     }
 
-    public void disponible(boolean disponible) {
+    public void setDisponible(boolean disponible) {
         this.disponible = disponible;
     }
 
-    public boolean vip() {
+    public boolean isVip() {
         return vip;
     }
 
-    public void vip(boolean vip) {
+    public void setVip(boolean vip) {
         this.vip = vip;
     }
 }
