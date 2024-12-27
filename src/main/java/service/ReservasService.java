@@ -16,13 +16,15 @@ public class ReservasService {
         return new ArrayList<>();
     }
 
-    public void newUsuario() {
+    public Usuario newUsuario() {
         throw new UnsupportedOperationException();
     }
 
     public Usuario buscarUsuario(String id) {
         return new Usuario();
     }
+
+    public void deleteUsuario(String id) {}
 
     public List<Vuelo> vuelos() {
         return new ArrayList<>();

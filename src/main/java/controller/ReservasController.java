@@ -1,5 +1,6 @@
 package controller;
 
+import controller.assembler.UsuarioModelAssembler;
 import controller.dtos.DTOReserva;
 import controller.dtos.DTOUsuario;
 import controller.dtos.DTOVuelo;
@@ -10,9 +11,12 @@ import model.Vuelo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.hateoas.CollectionModel;
 import org.springframework.hateoas.EntityModel;
+import org.springframework.hateoas.IanaLinkRelations;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import service.ReservasService;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,7 +30,7 @@ public class ReservasController {
     ReservasService servicio;
 
     @Autowired
-    Mapper mapper;
+    UsuarioModelAssembler usuarioModelAssembler;
 
     /**
      * Encapsula colecciones de recursos de usuarios
@@ -36,9 +40,7 @@ public class ReservasController {
     public CollectionModel<EntityModel<Usuario>> usuarios() {
 
         List<EntityModel<Usuario>> listaUsuarios = servicio.usuarios().stream()
-                .map(usuario -> EntityModel.of(usuario,
-                        linkTo(methodOn(ReservasController.class).buscarUsuario(usuario.getEmail())).withSelfRel(),
-                        linkTo(methodOn(ReservasController.class).usuarios()).withRel("usuarios")))
+                .map(usuarioModelAssembler::toModel) // Equivale a map(usuario -> usuarioModelAssembler.toModel(usuario))
                 .collect(Collectors.toList());
 
         return CollectionModel.of(listaUsuarios,
@@ -46,9 +48,29 @@ public class ReservasController {
 
     }
 
+    /**
+     * HTTP 201 si el usuario se ha creado bien
+     * @param dtoUsuario
+     * @return
+     */
     @PostMapping("/usuarios")
-    public void nuevoUsuario(DTOUsuario dtoUsuario) {
-        servicio.newUsuario();
+    public ResponseEntity<EntityModel<Usuario>> nuevoUsuario() {
+        EntityModel<Usuario> userModel = usuarioModelAssembler.toModel(servicio.newUsuario());
+        return ResponseEntity
+                .created(userModel.getRequiredLink(IanaLinkRelations.SELF).toUri())
+                .body(userModel);
+    }
+
+    /**
+     * HTTP 204 : No content, al borrar el usuario 
+     * @param id
+     * @return
+     */
+    @DeleteMapping("/usuarios/{id}")
+    public ResponseEntity<?> eliminarUsuario(@PathVariable String id) {
+        servicio.deleteUsuario(id);
+
+        return ResponseEntity.noContent().build();
     }
 
     /**
@@ -58,11 +80,7 @@ public class ReservasController {
      */
     @GetMapping("/usuarios/{id}")
     public EntityModel<Usuario> buscarUsuario(@PathVariable String id) {
-        Usuario usuario = servicio.buscarUsuario(id);
-
-        return EntityModel.of(usuario,
-                linkTo(methodOn(ReservasController.class).buscarUsuario(id)).withSelfRel(),
-                linkTo(methodOn(ReservasController.class).usuarios()).withRel("usuarios"));
+        return usuarioModelAssembler.toModel(servicio.buscarUsuario(id));
     }
 
     @GetMapping("/vuelos")
@@ -80,8 +98,7 @@ public class ReservasController {
 
     @GetMapping("/vuelos/{id}/reservas")
     public List<DTOReserva> reservas(@PathVariable String id) {
-        Vuelo vuelo = servicio.buscarVuelo(id);
-        return servicio.reservas().stream().map(reserva -> mapper.dto(reserva)).collect(Collectors.toList());
+        return new ArrayList<>();
     }
 
     @PostMapping("/vuelos/{id}/reservas")
