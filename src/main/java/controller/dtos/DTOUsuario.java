@@ -1,4 +1,6 @@
-package api.dtos;
+package controller.dtos;
+
+import model.Usuario;
 
 public record DTOUsuario(
     String email,
@@ -7,4 +9,5 @@ public record DTOUsuario(
     String apellidos,
     String dni,
     String telefono
-) {}
+) {
+}
